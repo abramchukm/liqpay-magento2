@@ -6,8 +6,9 @@
 
 namespace Pronko\LiqPayGateway\Gateway\Http;
 
-use Magento\Framework\HTTP\ZendClient;
-use Magento\Framework\HTTP\ZendClientFactory;
+use Laminas\Http\Exception\RuntimeException;
+use Magento\Framework\HTTP\LaminasClient;
+use Magento\Framework\HTTP\LaminasClientFactory;
 use Magento\Payment\Gateway\Http\ClientException;
 use Magento\Payment\Gateway\Http\ClientInterface;
 use Magento\Payment\Gateway\Http\ConverterException;
@@ -21,7 +22,7 @@ use Magento\Payment\Model\Method\Logger;
 class Client implements ClientInterface
 {
     /**
-     * @var ZendClientFactory
+     * @var LaminasClientFactory
      */
     private $clientFactory;
 
@@ -37,12 +38,12 @@ class Client implements ClientInterface
 
     /**
      * Client constructor.
-     * @param ZendClientFactory $clientFactory
+     * @param LaminasClientFactory $clientFactory
      * @param Logger $logger
      * @param ConverterInterface|null $converter
      */
     public function __construct(
-        ZendClientFactory $clientFactory,
+        LaminasClientFactory $clientFactory,
         Logger $logger,
         ConverterInterface $converter = null
     ) {
@@ -64,7 +65,7 @@ class Client implements ClientInterface
             'request' => $transferObject->getBody()
         ];
 
-        /** @var ZendClient $client */
+        /** @var LaminasClient $client */
         $client = $this->clientFactory->create();
 
         $result = [];
@@ -83,7 +84,7 @@ class Client implements ClientInterface
                 : [$response->getBody()];
 
             $log['response'] = $result;
-        } catch (\Zend_Http_Client_Exception $exception) {
+        } catch (RuntimeException $exception) {
             throw new ClientException(__($exception->getMessage()));
         } catch (ConverterException $exception) {
             throw $exception;
