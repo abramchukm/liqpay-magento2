@@ -70,14 +70,14 @@ class Client implements ClientInterface
 
         $result = [];
         try {
-            $client->setConfig($transferObject->getClientConfig());
+            $client->setOptions($transferObject->getClientConfig());
             $client->setMethod($transferObject->getMethod());
-            $client->setRawData($transferObject->getBody());
+            $client->setRawBody($transferObject->getBody());
             $client->setHeaders($transferObject->getHeaders());
             $client->setUrlEncodeBody($transferObject->shouldEncode());
             $client->setUri($transferObject->getUri());
 
-            $response = $client->request();
+            $response = $client->send();
 
             $result = $this->converter
                 ? $this->converter->convert($response->getBody())
